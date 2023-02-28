@@ -14,13 +14,26 @@ app.use(express.json());
 
 const port = process.env.PORT || 4000;
 const uri = process.env.MONGOOSE_CONNECTION_URI;
-mongoose
-  .connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("database connection successful!".bold.white.bgGreen))
-  .catch((err) => console.log(err));
+// mongoose
+//   .connect(uri, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("database connection successful!".bold.white.bgGreen))
+//   .catch((err) => console.log(err));
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("database connection successful!".bold.white.bgGreen);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
 
 app.get("/todos", async (req, res) => {
   try {
@@ -71,8 +84,11 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(port, () =>
-  console.log(
-    `Server in running on port:${colors.bold.bgYellow(port)} \n`.bold.bgMagenta
-  )
-);
+connectDB().then(() => {
+  app.listen(port, () =>
+    console.log(
+      `Server in running on port:${colors.bold.bgYellow(port)} \n`.bold
+        .bgMagenta
+    )
+  );
+});
